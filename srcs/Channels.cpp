@@ -79,7 +79,10 @@ void	Channels::deleteInvite(int i)
 	for (size_t idx = 0; idx != _inviteMembers.size(); idx++)
 	{
 		if (i == _inviteMembers[idx])
+		{
 			_inviteMembers.erase(_inviteMembers.begin() + idx);
+			break;
+		}
 	}
 }
 
