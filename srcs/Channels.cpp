@@ -20,16 +20,24 @@ Channels :: ~Channels ()
 std::string	Channels::getListNames()
 {
 	std::string	to_return = "";
+	int			idx = 0;
 
 	for(std::vector<std::string>::iterator i = _member.begin(); i != _member.end(); i++)
 	{
-		for(std::vector<std::string>::iterator idx = _operator.begin(); idx != _operator.end(); idx++)
+		for(std::vector<std::string>::iterator ite = _operator.begin(); ite != _operator.end(); ite++)
 		{
-			if (*i == *idx)
+			if (*i == *ite)
+			{
 				to_return += " @" + *i + " ";
-			else if (idx == _operator.end() - 1)
+				break;
+			}
+			else if (ite == _operator.end() - 1)
+			{
 				to_return += " " + *i + " ";
+				break;
+			}
 		}
+		idx++;
 	}
 	return (to_return);
 }
@@ -51,9 +59,9 @@ int	Channels::getTotalMember()
 
 int	Channels::getIt(int i)
 {
-	std::map<int, int>::iterator it = _memberIt.begin();
+	std::vector<int>::iterator it = _memberIt.begin();
 	std::advance(it, i);
-	return it->first;
+	return *it;
 }
 
 std::string	Channels::getMembers(int i)
@@ -61,19 +69,33 @@ std::string	Channels::getMembers(int i)
 	return _member[i];
 }
 
-void	Channels::setInvite(int i, int invite)
+void	Channels::setInvite(int i)
 {
-	std::map<int, int>::iterator it = _memberIt.begin();
-	std::advance(it, i);
-	it->second = invite;
+	_inviteMembers.push_back(i);
+}
+
+void	Channels::deleteInvite(int i)
+{
+	for (size_t idx = 0; idx != _inviteMembers.size(); idx++)
+	{
+		if (i == _inviteMembers[idx])
+			_inviteMembers.erase(_inviteMembers.begin() + idx);
+	}
 }
 
 int	Channels::getInvite(int i)
 {
-	std::map<int, int>::iterator it = _memberIt.begin();
-	if (i < _totalMember)
-		return (it->second);
-	return (-1);
+	for (std::vector<int>::iterator ite = _inviteMembers.begin(); ite != _inviteMembers.end(); ite++)
+	{
+		if (i == *ite)
+			return (1);
+	}
+	return (0);
+}
+
+std::vector<std::string> Channels::getMember(void)
+{
+	return (_member);
 }
 
 int	Channels::getAccess(void)
@@ -81,10 +103,10 @@ int	Channels::getAccess(void)
 	return (_access);
 }
 
-void	Channels::addMember(std::string member, int it, int invite)
+void	Channels::addMember(std::string member, int it)
 {
 	_member.push_back(member);
-	_memberIt.insert(std::pair<int, int>(it, invite));
+	_memberIt.push_back(it);
 	_totalMember++;
 	if (_totalMember == 1)
 		_operator.push_back(member);
@@ -111,7 +133,7 @@ void	Channels::deleteClient(std::string member)
 			}
 		}
 		_member.erase(_member.begin() + idx);
-		_memberIt.erase(idx);
+		_memberIt.erase(_memberIt.begin() + idx);
 		_totalMember--;
 		std::cout << "Names: " << getListNames() << std::endl;
 	}

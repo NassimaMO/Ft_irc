@@ -65,11 +65,11 @@ int		Server::verifChannels(std::string nameChannel)
 
 int		Server::checkingAccess(int itCh, int itCl)
 {
-	if (_channel[itCh].getAccess() == CH_INVITE + CH_PASSWORD && (_client[itCl].getPassword() != _channel[itCh].getPassword() || _channel[itCh].getInvite(itCl) == -1))
+	if (_channel[itCh].getAccess() == CH_INVITE + CH_PASSWORD && (_client[itCl].getPassword() != _channel[itCh].getPassword() || _channel[itCh].getInvite(itCl) == 0))
 		return (std::cout << "Channel invitation and password required." << std::endl, _client[itCl].sendErrInviteOnlyChan(_channel[itCh].getName()), _client[itCl].sendErrBadKey(_channel[itCh].getName()), 3);
 	else if (_channel[itCh].getAccess() == CH_PASSWORD && _client[itCl].getPassword() != _channel[itCh].getPassword())
 		return (std::cout << "Channel password required." << std::endl, _client[itCl].sendErrBadKey(_channel[itCh].getName()), 1);
-	else if (_channel[itCh].getAccess() == CH_INVITE && _channel[itCh].getInvite(itCl) == -1)
+	else if (_channel[itCh].getAccess() == CH_INVITE && _channel[itCh].getInvite(itCl) == 0)
 		return (std::cout << "Channel invitation required." << std::endl, _client[itCl].sendErrInviteOnlyChan(_channel[itCh].getName()), 2);
 	else if (_channel[itCh].getTotalMember() == _channel[itCh].getMaxMembers())
 		return (std::cout << "Channel already full." << std::endl, _client[itCl].sendErrChannelIsFull(_channel[itCh].getName()), 4);
@@ -95,8 +95,8 @@ int Server::execJoin(ssize_t it)
 		{
 			if (this->checkingAccess(ite, it) > 0)
 				return (1);
-			if (_channel[ite].getAccess() != CH_INVITE + CH_PASSWORD && _channel[ite].getAccess() != CH_INVITE)
-				_channel[ite].addMember(_client[it].getNick(), it, 0);
+			_channel[ite].deleteInvite(it);
+			_channel[ite].addMember(_client[it].getNick(), it);
 			std::cout << "Client " << _client[it].getNick() << " " << it << " joined channel " << _channel[ite].getName() << "." << std::endl;
 			if (_channel[ite].getTopic().empty())
 				_client[it].sendRPL331(_channel[ite].getName());
@@ -209,20 +209,24 @@ int	Server::execInvite(ssize_t it)
 		if (channel[0] != '#')
 			channel = "#" + channel;
 	}
-	std::cout << "Channel: " << channel << "." << channel.length() << std::endl;
 	for(std::vector<Channels>::iterator i = _channel.begin(); i != _channel.end(); i++)
 	{
 		if (i->getName() == channel)
 		{
 			for(std::vector<Clients>::iterator ite = _client.begin(); ite != _client.end(); ite++)
 			{
-				std::cout << "Client: " << ite->getNick() << std::endl;
 				if (ite->getNick() == to_invite)
 				{
-					i->addMember(ite->getNick(), std::distance(_client.begin(), ite), 1);
-					ite->sendRPL341(channel, to_invite);
-					_client[it].sendRPL341(channel, to_invite);
-					std::cout << "Client " << ite->getNick() << " " << std::distance(_client.begin(), ite) << " got invited to join channel " << i->getName() << " by " << _client[it].getNick() << std::endl;
+					std::vector<std::string> aa = i->getMember();
+					if(std::find(aa.begin(), aa.end(), to_invite) != aa.end())
+						std::cout << "Client already in channel." << std::endl;
+					else
+					{
+						i->setInvite(std::distance(_client.begin(), ite));
+						ite->sendRPL341(channel, to_invite);
+						_client[it].sendRPL341(channel, to_invite);
+						std::cout << "Client " << ite->getNick() << " " << std::distance(_client.begin(), ite) << " got invited to join channel " << i->getName() << " by " << _client[it].getNick() << std::endl;
+					}
 					break;
 				}
 			}

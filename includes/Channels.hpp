@@ -23,7 +23,8 @@ class	Channels
 		std::string					_password;
 		std::string					_buffer;
 		std::vector<std::string> 	_member;
-		std::map<int, int>			_memberIt;
+		std::vector<int>			_memberIt;
+		std::vector<int>			_inviteMembers;
 		std::vector<std::string>	_operator;
 		int							_topicAccess;
 		std::string					_botName;
@@ -37,9 +38,11 @@ class	Channels
 		~Channels();
 		std::string					getName();
 		std::string 				getPassword();
-		void						setInvite(int i, int invite);
+		void						setInvite(int i);
 		int							getInvite(int i);
-		void						addMember(std::string name, int it, int invite);
+		void						deleteInvite(int i);
+		std::vector<std::string>	getMember(void);
+		void						addMember(std::string name, int it);
 		int							getTotalMember();
 		int							getAccess(void);
 		std::string					getListNames();
