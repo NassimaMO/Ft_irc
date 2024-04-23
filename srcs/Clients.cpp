@@ -38,7 +38,13 @@ void	Clients::parse(std::string command, int i, std::string &src)
 		if (_buffer[it] == '\r' && _buffer[it + 1] == '\n')
 		{
 			std::cout << "\033[1;33mParse\033[0m : Command :" << command << "." << std::endl;
-			std::cout << _buffer.substr(command.length() + 1, it - (command.length() + 1)) << std::endl;
+			//std::cout << _buffer.substr(command.length() + 1, it - (command.length() + 1)) << std::endl;
+			if (command != "CAP LS" && command != "NICK" && command != "PASS" && (_nick == ""  || _password == ""))
+			{
+				std::cout << "Not enough information given." << std::endl;
+				_buffer.clear();
+				return ;
+			}
 			if (command != "CAP LS" && command != "QUIT")
 			{
 				src = _buffer.substr(command.length() + 1, it - (command.length() + 1));

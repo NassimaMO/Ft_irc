@@ -31,7 +31,6 @@ std::string	Channels::getListNames()
 				to_return += " " + *i + " ";
 		}
 	}
-	//std::cout << to_return << std::endl;
 	return (to_return);
 }
 
@@ -72,8 +71,8 @@ void	Channels::setInvite(int i, int invite)
 int	Channels::getInvite(int i)
 {
 	std::map<int, int>::iterator it = _memberIt.begin();
-	if (i <= _totalMember)
-		return (std::advance(it, i), it->second);
+	if (i < _totalMember)
+		return (it->second);
 	return (-1);
 }
 
@@ -112,7 +111,9 @@ void	Channels::deleteClient(std::string member)
 			}
 		}
 		_member.erase(_member.begin() + idx);
+		_memberIt.erase(idx);
 		_totalMember--;
+		std::cout << "Names: " << getListNames() << std::endl;
 	}
 }
 

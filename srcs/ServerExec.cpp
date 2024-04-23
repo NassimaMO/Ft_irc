@@ -65,11 +65,11 @@ int		Server::verifChannels(std::string nameChannel)
 
 int		Server::checkingAccess(int itCh, int itCl)
 {
-	if (_channel[itCh].getAccess() == CH_INVITE + CH_PASSWORD && (_client[itCl].getPassword() != _channel[itCh].getPassword() || _channel[itCh].getInvite(itCl) == 0))
+	if (_channel[itCh].getAccess() == CH_INVITE + CH_PASSWORD && (_client[itCl].getPassword() != _channel[itCh].getPassword() || _channel[itCh].getInvite(itCl) == -1))
 		return (std::cout << "Channel invitation and password required." << std::endl, _client[itCl].sendErrInviteOnlyChan(_channel[itCh].getName()), _client[itCl].sendErrBadKey(_channel[itCh].getName()), 3);
 	else if (_channel[itCh].getAccess() == CH_PASSWORD && _client[itCl].getPassword() != _channel[itCh].getPassword())
 		return (std::cout << "Channel password required." << std::endl, _client[itCl].sendErrBadKey(_channel[itCh].getName()), 1);
-	else if (_channel[itCh].getAccess() == CH_INVITE && _channel[itCh].getInvite(itCl) == 0)
+	else if (_channel[itCh].getAccess() == CH_INVITE && _channel[itCh].getInvite(itCl) == -1)
 		return (std::cout << "Channel invitation required." << std::endl, _client[itCl].sendErrInviteOnlyChan(_channel[itCh].getName()), 2);
 	else if (_channel[itCh].getTotalMember() == _channel[itCh].getMaxMembers())
 		return (std::cout << "Channel already full." << std::endl, _client[itCl].sendErrChannelIsFull(_channel[itCh].getName()), 4);

@@ -41,10 +41,10 @@ int	Server::initServ(void)
 	serv_addr.sin_port = htons(strtoint(_port));
 	serv_addr.sin_family = AF_INET;
 	if (bind(_sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
-		return (-1);
+		return (std::cout << "Socket already in use." << std::endl, -1);
 	std::cout << "IP address: " << serv_addr.sin_addr.s_addr << std::endl;
 	struct pollfd fd;
-	_fds.push_back(fd); // ??
+	_fds.push_back(fd);
 	_fds[0].fd = _sockfd;
 	_fds[0].events = POLLIN;
 	_fds[0].revents = 0;
