@@ -98,7 +98,10 @@ int Server::execJoin(ssize_t it)
 			if (_channel[ite].getAccess() != CH_INVITE + CH_PASSWORD && _channel[ite].getAccess() != CH_INVITE)
 				_channel[ite].addMember(_client[it].getNick(), it, 0);
 			std::cout << "Client " << _client[it].getNick() << " " << it << " joined channel " << _channel[ite].getName() << "." << std::endl;
-			_client[it].sendRPL331(_channel[ite].getName());
+			if (_channel[ite].getTopic().empty())
+				_client[it].sendRPL331(_channel[ite].getName());
+			else
+				_client[it].sendRPL332(_channel[ite].getName(), _channel[ite].getTopic());
 			_client[it].sendRPL353(_channel[ite].getName(), _channel[ite].getListNames());
 			_client[it].sendRPL366(_channel[ite].getName());
 			_client[it].sendPrivMsg(_channel[ite].getName(), " :Bienvenue sur ce Channel ! N'hésitez pas à m'appeler. Pour savoir tout ce que je fais, utiliser la fonction <<!bot help>>", _channel[ite].getBotName());
