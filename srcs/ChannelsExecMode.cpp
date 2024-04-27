@@ -38,9 +38,12 @@ std::string	Channels::execKey(int key)
 			}
 			else
 				_buffer = _buffer.substr(0, _buffer.find_first_of(" "));
-			if (_access == 2 || _access == 0)
-				_access += CH_PASSWORD;
-			return (std::cout << _name << ": Mode: Channel password set to \"" << _password << "\"." << std::endl, "Channel password set to \"" + _password + "\".");
+			if (_password != "")
+			{
+				if (_access == 2 || _access == 0)
+					_access += CH_PASSWORD;
+				return (std::cout << _name << ": Mode: Channel password set to \"" << _password << "\"." << std::endl, "Channel password set to \"" + _password + "\".");
+			}
 		}
 	}
 	return (std::cout << _name << ": Mode: Missing password.", "Missing password.");

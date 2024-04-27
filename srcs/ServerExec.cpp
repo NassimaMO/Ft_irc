@@ -11,6 +11,7 @@ int	Server::execWelcome(ssize_t it)
 		_client[it].sendRPL001();
 		_client[it].sendRPL002();
 		_client[it].sendRPL003();
+		_client[it].setPassword("");
 		return (0);
 	}
 	return (0);
@@ -65,6 +66,7 @@ int		Server::verifChannels(std::string nameChannel)
 
 int		Server::checkingAccess(int itCh, int itCl)
 {
+	std::cout << "Access :" << _channel[itCh].getAccess() << " Pass Cl" << _client[itCl].getPassword() << " Pass Ch" << _channel[itCh].getPassword() << std::endl;
 	if (_channel[itCh].getAccess() == CH_INVITE + CH_PASSWORD && (_client[itCl].getPassword() != _channel[itCh].getPassword() || _channel[itCh].getInvite(itCl) == 0))
 		return (std::cout << "Channel invitation and password required." << std::endl, _client[itCl].sendErrInviteOnlyChan(_channel[itCh].getName()), _client[itCl].sendErrBadKey(_channel[itCh].getName()), 3);
 	else if (_channel[itCh].getAccess() == CH_PASSWORD && _client[itCl].getPassword() != _channel[itCh].getPassword())
